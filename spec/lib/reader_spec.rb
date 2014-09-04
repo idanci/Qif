@@ -38,7 +38,7 @@ shared_examples_for "3 record files" do
 end
 
 describe Qif::Reader do
-  %w(dd/mm/yyyy mm/dd/yyyy dd/mm/yy mm/dd/yy).each do |format|
+  %w(dd/mm/yyyy mm/dd/yyyy dd/mm/yy mm/dd/yy d/m/yy).each do |format|
     context "when format is #{format}" do
       it_behaves_like "3 record files" do
         let(:instance) { Qif::Reader.new(open('spec/fixtures/3_records_%s.qif' % format.gsub('/', '')).read, format) }
@@ -92,17 +92,17 @@ describe Qif::Reader do
     @instance.size.should == 3
     @instance.collect(&:amount).should == [-1010.0, -30020.0, 30.0]
   end
-  
+
   it 'should initialize with an io object' do
     @instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'))
     @instance.size.should == 3
   end
-  
+
   it 'should initialize with data in a string' do
     @instance = Qif::Reader.new(File.read('spec/fixtures/3_records_ddmmyyyy.qif'))
     @instance.size.should == 3
   end
-  
+
   it 'should reject transactions whose date does not match the given date format' do
     @instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'), 'mm/dd/yyyy')
     @instance.size.should == 2

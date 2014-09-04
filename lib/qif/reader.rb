@@ -88,7 +88,6 @@ module Qif
       end until guessed_format
 
       @data.rewind
-
       guessed_format ? guessed_format.first : @fallback_format
     end
 
