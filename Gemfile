@@ -4,4 +4,4 @@ gemspec
 
 gem "rake"
 gem "rdoc", :require => false
-gem "debugger"
+gem "pry-byebug"

@@ -8,14 +8,14 @@ module Qif
   # Usage:
   #   Qif::Writer.open('/path/to/new/qif') do |writer|
   #     writer << Qif::Transaction.new(
-  #       :date => Time.now, 
-  #       :amount => 10.0, 
+  #       :date => Time.now,
+  #       :amount => 10.0,
   #       :name => 'Credit'
   #     )
   #   end
   class Writer
     attr_accessor :type, :format
-    
+
     # Open a qif file for writing and yield a Qif::Writer instance.
     # For parameters see #new.
     def self.open(path, type = 'Bank', format = 'dd/mm/yyyy', &block)
@@ -23,7 +23,7 @@ module Qif
         self.new(file, type, format, &block)
       end
     end
-    
+
     # Create a new Qif::Writer. Expects an IO object or a filepath.
     # Can optionally take a block which will yield the writer and
     # automatically call write afterwards.
@@ -52,45 +52,45 @@ module Qif
       @type = type
       @format = format
       @transactions = []
-      
+
       if block_given?
         yield self
         self.write
       end
     end
-    
+
     # Add a transaction for writing
     def <<(transaction)
       @transactions << transaction
     end
-    
+
     # Write the qif file
     def write
       write_header
       write_transactions
     end
-    
+
     # Close the qif file
     def close
       @io.close
     end
-    
+
     private
-    
+
     def write_header
       @io.write("!Type:%s\n" % @type)
     end
-    
+
     def write_transactions
       @transactions.each do |t|
         write_transaction(t)
       end
     end
-    
+
     def write_transaction(transaction)
       write_record(transaction.to_s(@format))
     end
-    
+
     def write_record(data)
       @io.write(data)
       @io.write("\n^\n")
