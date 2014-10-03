@@ -3,16 +3,6 @@ require 'qif/date_format'
 require 'qif/transaction'
 
 module Qif
-  # The Qif::Reader class reads a qif file and provides access to
-  # the transactions as Qif::Transaction objects.
-  #
-  # Usage:
-  #
-  #   reader = Qif::Reader.new(open('/path/to/qif'), 'dd/mm/yyyy')
-  #   reader.each do |transaction|
-  #     puts transaction.date.strftime('%d/%m/%Y')
-  #     puts transaction.amount.to_s
-  #   end
   class Reader
     include Enumerable
 
@@ -29,13 +19,6 @@ module Qif
     class UnknownAccountType < StandardError; end
     class UnrecognizedData < StandardError; end
 
-    # Create a new Qif::Reader object. The data argument must be
-    # either an IO object or a String containing the Qif file data.
-    #
-    # The optional format argument specifies the date format in the file.
-    # Giving a format will force it, otherwise the format will guessed
-    # reading the transactions in the file, this defaults to 'dd/mm/yyyy'
-    # if guessing method fails.
     def initialize(data, format = nil)
       @data = data.respond_to?(:read) ? data : StringIO.new(data.to_s)
       @format = DateFormat.new(format || guess_date_format || 'dd/mm/yyyy')
@@ -45,21 +28,11 @@ module Qif
       reset
     end
 
-    # Return an array of Qif::Transaction objects from the Qif file. This
-    # method reads the whole file before returning, so it may not be suitable
-    # for very large qif files.
     def transactions
       read_all_transactions
       transaction_cache
     end
 
-    # Call a block with each Qif::Transaction from the Qif file. This
-    # method yields each transaction as it reads the file so it is better
-    # to use this than #transactions for large qif files.
-    #
-    #   reader.each do |transaction|
-    #     puts transaction.amount
-    #   end
     def each(&block)
       reset
 
@@ -125,8 +98,6 @@ module Qif
       end
     end
 
-    # lineno= and seek don't seem
-    # to work with StringIO
     def rewind_to(n)
       @data.rewind
       while @data.lineno != n
